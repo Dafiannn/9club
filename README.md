@@ -1,4 +1,4 @@
-# Ayudya — Landing Page (Beranda)
+# 9club— Landing Page (Beranda)
 
 Stack: **HTML + CSS + Vue 3 (via CDN, tanpa build tool)**.
 
