@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard — 9club Admin</title>
+<link rel="icon" href="../assets/img/logo-9club-white.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css?v=1">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1">
+</head>
+<body class="admin-body">
+<div class="admin">
+  <aside class="side" id="side"></aside>
+  <div class="admin-main">
+    <div class="topbar" id="topbar"></div>
+    <div class="admin-content">
+      <div class="stats" id="stats"></div>
+      <div class="grid-2col">
+        <div class="panel">
+          <div class="panel-head"><h2>Penjualan 7 hari terakhir</h2><span class="pill green">+18%</span></div>
+          <div class="chart" id="chart"></div>
+          <div class="chart-foot"><span style="color:var(--olive);font-size:13px">Estimasi transaksi harian (unit)</span></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Stok menipis</h2></div>
+          <div class="table-wrap"><table class="tbl"><tbody id="lowstock"></tbody></table></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Transaksi terbaru</h2><a href="transaksi.html" class="btn btn-ghost btn-sm">Lihat semua</a></div>
+        <div class="table-wrap"><table class="tbl">
+          <thead><tr><th>Order ID</th><th>Tanggal</th><th>Item</th><th>Metode</th><th>Total</th><th>Status</th></tr></thead>
+          <tbody id="recent"></tbody></table></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/products.js?v=1"></script>
+<script src="../assets/js/articles.js?v=1"></script>
+<script src="../assets/js/auth.js?v=1"></script>
+<script src="../assets/js/admin.js?v=1"></script>
+<script>
+  mountAdmin('dash','Dashboard','Ringkasan performa toko 9club');
+  const prods=adminProducts(), orders=adminOrders(), users=adminUsers();
+  const revenue=orders.reduce((n,o)=>n+o.total,0);
+  const statusPill={paid:'green',pending:'amber',shipped:'blue'};
+  const statusTxt={paid:'Dibayar',pending:'Menunggu',shipped:'Dikirim'};
+
+  document.getElementById('stats').innerHTML=[
+    {ic:AICON.money,num:rupiah(revenue),lbl:'Total Pendapatan',d:'+18% minggu ini',up:true},
+    {ic:AICON.cart,num:orders.length,lbl:'Total Transaksi',d:'+3 hari ini',up:true},
+    {ic:AICON.box,num:prods.length,lbl:'Produk Aktif',d:prods.filter(p=>p.sold).length+' sold out',up:false},
+    {ic:AICON.users,num:users.length,lbl:'Pengguna',d:'+2 minggu ini',up:true}
+  ].map(s=>`<div class="stat"><div class="ic">${s.ic}</div><div class="num">${s.num}</div>
+    <div class="lbl">${s.lbl}</div><div class="delta ${s.up?'up':'down'}">${s.d}</div></div>`).join('');
+
+  const days=['Sen','Sel','Rab','Kam','Jum','Sab','Min'], vals=[4,7,5,9,12,15,10], max=Math.max(...vals);
+  document.getElementById('chart').innerHTML=days.map((d,i)=>
+    `<div class="bar" style="height:${vals[i]/max*100}%"><b>${vals[i]}</b><span>${d}</span></div>`).join('');
+
+  document.getElementById('lowstock').innerHTML=prods.filter(p=>p.stock<=6).slice(0,5).map(p=>
+    `<tr><td><div class="cell-prod"><img src="${p.img}"><div><b>${p.name}</b><small>${p.category}</small></div></div></td>
+     <td style="text-align:right"><span class="pill ${p.stock===0?'red':'amber'}">${p.stock===0?'Habis':p.stock+' pcs'}</span></td></tr>`).join('')
+     || '<tr><td style="padding:20px;color:var(--olive)">Semua stok aman.</td></tr>';
+
+  document.getElementById('recent').innerHTML=orders.slice(0,6).map(o=>
+    `<tr><td><b>${o.id}</b></td><td>${o.date}</td><td>${o.items.reduce((n,i)=>n+i.qty,0)} item</td>
+     <td>${o.pay}</td><td><b>${rupiah(o.total)}</b></td>
+     <td><span class="pill ${statusPill[o.status]}">${statusTxt[o.status]}</span></td></tr>`).join('');
+</script>
+</body>
+</html>

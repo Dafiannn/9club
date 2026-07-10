@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Masuk — 9club</title>
+<link rel="icon" href="assets/img/logo-9club-white.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=1">
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="auth-wrap">
+  <form class="auth-card" id="loginForm">
+    <div class="logo-line" style="background:var(--ink);padding:14px;margin:-40px -34px 22px">
+      <img src="assets/img/logo-9club-white.png" alt="9club">
+    </div>
+    <h1>Masuk</h1>
+    <p class="subtitle">Selamat datang kembali di 9club</p>
+    <div class="auth-err" id="err"></div>
+    <div class="field"><label>Email</label><input id="email" type="email" required placeholder="kamu@email.com"></div>
+    <div class="field"><label>Password</label><input id="pass" type="password" required placeholder="••••••••"></div>
+    <button class="btn btn-dark btn-block" type="submit">Masuk</button>
+    <p class="auth-note">Belum punya akun? <a href="register.html">Daftar</a></p>
+    <div class="admin-hint">Akun admin demo:<br><b>admin@9club.id</b> · password <b>admin123</b></div>
+  </form>
+</div>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/auth.js?v=1"></script>
+<script src="assets/js/products.js?v=1"></script>
+<script src="assets/js/main.js?v=1"></script>
+<script>
+  mountHeader(); mountFooter();
+  const next = new URLSearchParams(location.search).get('next');
+  document.getElementById('loginForm').onsubmit = e => {
+    e.preventDefault();
+    const r = Auth.login(document.getElementById('email').value.trim(), document.getElementById('pass').value);
+    if(!r.ok){ const el=document.getElementById('err'); el.textContent=r.msg; el.classList.add('show'); return; }
+    if(r.role==='admin') location.href='admin/dashboard.html';
+    else location.href = next==='admin' ? 'index.html' : 'index.html';
+  };
+</script>
+</body>
+</html>

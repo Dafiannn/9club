@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Collection — 9club</title>
+<link rel="icon" href="assets/img/logo-9club-white.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=1">
+</head>
+<body>
+<!-- 9club catalog -->
+<div id="site-header"></div>
+
+<div class="page-head">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="index.html">Home</a> / Collection</div>
+    <h1>Drop 1 Collection</h1>
+    <p>Koleksi pertama 9club. Tee, jorts, denim, dan headwear — dibuat terbatas.</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="wrap">
+    <div class="toolbar">
+      <div class="filters" id="filters"></div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <span class="result-count" id="count"></span>
+        <select class="sort-select" id="sort">
+          <option value="new">Terbaru</option>
+          <option value="low">Harga terendah</option>
+          <option value="high">Harga tertinggi</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid-4" id="catalog"></div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/auth.js?v=1"></script>
+<script src="assets/js/products.js?v=1"></script>
+<script src="assets/js/main.js?v=1"></script>
+<script>
+  mountHeader(); mountFooter();
+  const cats = ['All', ...new Set(getProducts().map(p => p.category))];
+  const params = new URLSearchParams(location.search);
+  let activeCat = params.get('cat') || 'All';
+  let sortMode = 'new';
+
+  function draw(){
+    let list = getProducts().filter(p => activeCat === 'All' || p.category === activeCat);
+    if(sortMode === 'low') list = [...list].sort((a,b)=>a.price-b.price);
+    if(sortMode === 'high') list = [...list].sort((a,b)=>b.price-a.price);
+    renderGalleryGrid('catalog', list);
+    document.getElementById('count').textContent = list.length + ' produk';
+    document.getElementById('filters').innerHTML = cats.map(c =>
+      `<button class="chip ${c===activeCat?'active':''}" data-c="${c}">${c}</button>`).join('');
+    document.querySelectorAll('.chip').forEach(b => b.onclick = () => { activeCat = b.dataset.c; draw(); });
+  }
+  document.getElementById('sort').onchange = e => { sortMode = e.target.value; draw(); };
+  draw();
+</script>
+</body>
+</html>

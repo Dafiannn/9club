@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Produk — 9club</title>
+<link rel="icon" href="assets/img/logo-9club-white.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=1">
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="wrap">
+  <div class="breadcrumb" id="crumb" style="padding-top:22px"></div>
+  <div class="pd" id="pd"></div>
+</div>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="section-head"><h2>Kamu mungkin suka</h2></div>
+    <div class="grid-4" id="related"></div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+<div class="toast" id="toast">Ditambahkan ke keranjang ✓</div>
+
+<script src="assets/js/auth.js?v=1"></script>
+<script src="assets/js/products.js?v=1"></script>
+<script src="assets/js/main.js?v=1"></script>
+<script>
+  mountHeader(); mountFooter();
+  const id = new URLSearchParams(location.search).get('id');
+  const p = findProduct(id) || getProducts()[0];
+  const gimgs = (p.images && p.images.length) ? p.images : [p.img];
+  const sizes = p.category === 'Headwear' ? ['One Size'] : ['S','M','L','XL'];
+  let curSize = sizes[0], qty = 1, curImg = 0;
+
+  document.getElementById('crumb').innerHTML =
+    `<a href="index.html">Home</a> / <a href="katalog.html">Collection</a> / ${p.name}`;
+
+  function render(){
+    const soldNote = p.sold
+      ? `<p style="color:var(--danger);font-weight:600;margin-bottom:16px">● Sold out — stok habis</p>` : '';
+    document.getElementById('pd').innerHTML = `
+      <div class="pd-gallery">
+        <div class="pd-thumbs">
+          ${gimgs.map((src,i)=>`<button class="${i===curImg?'active':''}" data-i="${i}"><img src="${src}" alt=""></button>`).join('')}
+        </div>
+        <div class="pd-main"><img id="mainImg" src="${gimgs[curImg]}" alt="${p.name}"></div>
+      </div>
+      <div class="pd-info">
+        <div class="cat">${p.category} · ${p.drop}</div>
+        <h1>${p.name}</h1>
+        <div class="pd-price">${rupiah(p.price)}</div>
+        ${soldNote}
+        <p class="pd-desc">${p.desc}</p>
+        <div class="pd-row">
+          <span class="pd-label">Ukuran</span>
+          <div class="size-opts">${sizes.map(s=>`<button class="${s===curSize?'active':''}" data-s="${s}">${s}</button>`).join('')}</div>
+        </div>
+        <div class="pd-row">
+          <span class="pd-label">Jumlah</span>
+          <div class="qty"><button id="minus">−</button><span id="q">${qty}</span><button id="plus">+</button></div>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:8px">
+          <button class="btn btn-dark btn-block" id="addBtn" ${p.sold?'disabled':''}>
+            ${p.sold?'Sold Out':'Tambah ke Keranjang'}</button>
+        </div>
+        <div class="pd-meta">
+          <div><b>Warna</b> ${p.color}</div>
+          <div><b>Bahan</b> ${p.material}</div>
+          <div><b>Koleksi</b> ${p.drop}</div>
+        </div>
+      </div>`;
+
+    document.querySelectorAll('.pd-thumbs button').forEach(b=>b.onclick=()=>{curImg=+b.dataset.i;render();});
+    document.querySelectorAll('.size-opts button').forEach(b=>b.onclick=()=>{curSize=b.dataset.s;render();});
+    document.getElementById('minus').onclick=()=>{qty=Math.max(1,qty-1);render();};
+    document.getElementById('plus').onclick=()=>{qty++;render();};
+    const add=document.getElementById('addBtn');
+    if(!p.sold) add.onclick=()=>{ Cart.add(p.id,curSize,qty); const t=document.getElementById('toast'); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800); };
+  }
+  render();
+  renderGrid('related', getProducts().filter(x=>x.id!==p.id).slice(0,4));
+</script>
+</body>
+</html>

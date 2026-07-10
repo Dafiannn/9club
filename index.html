@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>9club — Feel Your Paw · Drop 1 Collection</title>
+<meta name="description" content="9club streetwear — Drop 1 Collection. Tees, jorts, denim & headwear. Feel your paw.">
+<link rel="icon" href="assets/img/logo-9club-white.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=1">
+</head>
+<body class="home-hero">
+<div id="site-header"></div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-media">
+    <video id="heroVideo" src="assets/video/home.mp4" autoplay muted loop playsinline poster="assets/img/products/tee-boyz-2.jpg"></video>
+  </div>
+  <button class="hero-sound" id="soundBtn" type="button" aria-label="Nyalakan suara">
+    <svg class="ic-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M16 9l5 6M21 9l-5 6"/></svg>
+    <svg class="ic-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M16 8.5a4 4 0 0 1 0 7M18.7 6a7 7 0 0 1 0 12"/></svg>
+  </button>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>9CLUB<i>drop 1</i></span><span>Feel Your Paw<i>2026</i></span>
+    <span>9CLUB<i>drop 1</i></span><span>Feel Your Paw<i>2026</i></span>
+    <span>9CLUB<i>drop 1</i></span><span>Feel Your Paw<i>2026</i></span>
+    <span>9CLUB<i>drop 1</i></span><span>Feel Your Paw<i>2026</i></span>
+  </div>
+</div>
+
+<!-- NEW ARRIVAL -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="eyebrow">Just dropped</div>
+        <h2>New Arrival</h2>
+      </div>
+      <a class="link" href="katalog.html">View all</a>
+    </div>
+    <div class="grid-4" id="new-arrival"></div>
+    <div class="center-cta"><a href="katalog.html" class="btn btn-ghost">View all products</a></div>
+  </div>
+</section>
+
+<!-- FEATURED COLLECTIONS -->
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="section-head">
+      <div><div class="eyebrow">Editorial</div><h2>The Collections</h2></div>
+    </div>
+    <div class="feature-grid">
+      <a href="katalog.html" class="feature tall">
+        <img src="assets/img/products/jorts-black-2.jpg" alt="9club Boyz">
+        <div class="feature-txt"><span class="script">9club Boyz</span><span class="btn btn-lime">Explore</span></div>
+      </a>
+      <a href="katalog.html?cat=T-Shirt" class="feature">
+        <img src="assets/img/products/ringer-4.jpg" alt="Ringer Tee">
+        <div class="feature-txt"><span class="script">Ringer Tee</span></div>
+      </a>
+      <a href="katalog.html?cat=Headwear" class="feature">
+        <img src="assets/img/products/cap-brown-4.jpg" alt="Headwear">
+        <div class="feature-txt"><span class="script">Headwear</span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/auth.js?v=1"></script>
+<script src="assets/js/products.js?v=1"></script>
+<script src="assets/js/main.js?v=1"></script>
+<script>
+  mountHeader('home');
+  mountFooter();
+  initHomeHeader();
+  renderGrid('new-arrival', getProducts());
+
+  // toggle suara video hero (mulai mute biar autoplay jalan, klik untuk nyalakan)
+  (function(){
+    const v=document.getElementById('heroVideo'), sb=document.getElementById('soundBtn');
+    if(!v||!sb) return;
+    sb.addEventListener('click',()=>{
+      v.muted=!v.muted;
+      if(!v.muted){ v.volume=1; v.play().catch(()=>{}); }
+      sb.classList.toggle('on',!v.muted);
+      sb.setAttribute('aria-label', v.muted?'Nyalakan suara':'Matikan suara');
+    });
+  })();
+</script>
+</body>
+</html>

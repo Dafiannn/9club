@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Artikel — 9club</title>
+<link rel="icon" href="assets/img/logo-9club-white.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=1">
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="wrap">
+  <article class="article-body" id="art"></article>
+</div>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="section-head"><h2>Artikel lainnya</h2></div>
+    <div class="grid-3" id="more"></div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/auth.js?v=1"></script>
+<script src="assets/js/products.js?v=1"></script>
+<script src="assets/js/articles.js?v=1"></script>
+<script src="assets/js/main.js?v=1"></script>
+<script>
+  mountHeader(); mountFooter();
+  const id = new URLSearchParams(location.search).get('id');
+  const a = findArticle(id) || ARTICLES[0];
+  document.getElementById('art').innerHTML = `
+    <div class="breadcrumb"><a href="artikel.html">Journal</a> / ${a.category}</div>
+    <div class="cover"><img src="${a.cover}" alt="${a.title}"></div>
+    <div class="art-meta">${a.category} · ${a.date} · ${a.author}</div>
+    <h1>${a.title}</h1>
+    ${a.body.map(p=>`<p>${p}</p>`).join('')}
+    <a href="artikel.html" class="btn btn-ghost" style="margin-top:14px">← Kembali ke Journal</a>`;
+  document.getElementById('more').innerHTML = ARTICLES.filter(x=>x.id!==a.id).slice(0,3).map(x=>`
+    <a class="art-card" href="artikel-detail.html?id=${x.id}">
+      <div class="img"><img src="${x.cover}" alt=""></div>
+      <div class="art-meta">${x.category} · ${x.date}</div>
+      <h3>${x.title}</h3>
+    </a>`).join('');
+</script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daftar — 9club</title>
+<link rel="icon" href="assets/img/logo-9club-white.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=1">
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="auth-wrap">
+  <form class="auth-card" id="regForm">
+    <div class="logo-line" style="background:var(--ink);padding:14px;margin:-40px -34px 22px">
+      <img src="assets/img/logo-9club-white.png" alt="9club">
+    </div>
+    <h1>Daftar</h1>
+    <p class="subtitle">Gabung 9club, mulai belanja Drop 1</p>
+    <div class="auth-err" id="err"></div>
+    <div class="field"><label>Nama Lengkap</label><input id="name" required placeholder="Nama kamu"></div>
+    <div class="field"><label>Email</label><input id="email" type="email" required placeholder="kamu@email.com"></div>
+    <div class="field"><label>Password</label><input id="pass" type="password" required minlength="4" placeholder="Minimal 4 karakter"></div>
+    <div class="field"><label>Konfirmasi Password</label><input id="pass2" type="password" required placeholder="Ulangi password"></div>
+    <button class="btn btn-dark btn-block" type="submit">Buat Akun</button>
+    <p class="auth-note">Sudah punya akun? <a href="login.html">Masuk</a></p>
+  </form>
+</div>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/auth.js?v=1"></script>
+<script src="assets/js/products.js?v=1"></script>
+<script src="assets/js/main.js?v=1"></script>
+<script>
+  mountHeader(); mountFooter();
+  document.getElementById('regForm').onsubmit = e => {
+    e.preventDefault();
+    const el=document.getElementById('err');
+    const pass=document.getElementById('pass').value, pass2=document.getElementById('pass2').value;
+    if(pass!==pass2){ el.textContent='Password tidak sama.'; el.classList.add('show'); return; }
+    const r = Auth.register(document.getElementById('name').value.trim(), document.getElementById('email').value.trim(), pass);
+    if(!r.ok){ el.textContent=r.msg; el.classList.add('show'); return; }
+    location.href='index.html';
+  };
+</script>
+</body>
+</html>

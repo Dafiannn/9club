@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Artikel — 9club</title>
+<link rel="icon" href="assets/img/logo-9club-white.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=1">
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-head">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="index.html">Home</a> / Artikel</div>
+    <h1>Journal</h1>
+    <p>Cerita, style guide, dan hal-hal di balik 9club.</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="wrap">
+    <div id="feature"></div>
+    <div class="grid-3" id="art-grid"></div>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/auth.js?v=1"></script>
+<script src="assets/js/products.js?v=1"></script>
+<script src="assets/js/articles.js?v=1"></script>
+<script src="assets/js/main.js?v=1"></script>
+<script>
+  mountHeader(); mountFooter();
+  const f = ARTICLES[0];
+  document.getElementById('feature').innerHTML = `
+    <a class="article-feature" href="artikel-detail.html?id=${f.id}">
+      <div class="img"><img src="${f.cover}" alt="${f.title}"></div>
+      <div>
+        <div class="art-meta">${f.category} · ${f.date}</div>
+        <h2>${f.title}</h2>
+        <p>${f.excerpt}</p>
+        <span class="btn btn-ghost">Baca selengkapnya →</span>
+      </div>
+    </a>`;
+  document.getElementById('art-grid').innerHTML = ARTICLES.slice(1).map(a=>`
+    <a class="art-card" href="artikel-detail.html?id=${a.id}">
+      <div class="img"><img src="${a.cover}" alt="${a.title}"></div>
+      <div class="art-meta">${a.category} · ${a.date}</div>
+      <h3>${a.title}</h3>
+      <p>${a.excerpt}</p>
+    </a>`).join('');
+</script>
+</body>
+</html>

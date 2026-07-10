@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kelola Pengguna — 9club Admin</title>
+<link rel="icon" href="../assets/img/logo-9club-white.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css?v=1">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1">
+</head>
+<body class="admin-body">
+<div class="admin">
+  <aside class="side" id="side"></aside>
+  <div class="admin-main">
+    <div class="topbar" id="topbar"></div>
+    <div class="admin-content">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Daftar Pengguna</h2>
+          <button class="btn btn-dark btn-sm" onclick="editUser()">+ Tambah Pengguna</button>
+        </div>
+        <div class="table-wrap"><table class="tbl">
+          <thead><tr><th>Nama</th><th>Email</th><th>Role</th><th>Bergabung</th><th>Status</th><th style="text-align:right">Aksi</th></tr></thead>
+          <tbody id="rows"></tbody></table></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/auth.js?v=1"></script>
+<script src="../assets/js/admin.js?v=1"></script>
+<script>
+  mountAdmin('pengguna','Kelola Pengguna','Data pelanggan & admin 9club');
+  let list = adminUsers();
+  function save(){ Store.set('9club_admin_users', list); }
+
+  function draw(){
+    document.getElementById('rows').innerHTML = list.map((u,i)=>`
+      <tr>
+        <td><div class="cell-prod"><div class="avatar" style="width:38px;height:38px">${u.name.charAt(0)}</div><div><b>${u.name}</b><small>${u.id}</small></div></div></td>
+        <td>${u.email}</td>
+        <td><span class="pill ${u.role==='Admin'?'amber':'blue'}">${u.role}</span></td>
+        <td>${u.joined}</td>
+        <td><span class="pill ${u.status==='active'?'green':'red'}">${u.status==='active'?'Aktif':'Banned'}</span></td>
+        <td><div class="act-btns" style="justify-content:flex-end">
+          <button class="icon-act" onclick="toggleBan(${i})" aria-label="Toggle">${u.status==='active'?'🚫':'✓'}</button>
+          <button class="icon-act" onclick="editUser(${i})" aria-label="Edit">${AICON.edit}</button>
+          <button class="icon-act del" onclick="delUser(${i})" aria-label="Hapus">${AICON.trash}</button>
+        </div></td>
+      </tr>`).join('');
+  }
+  function editUser(i){
+    const u = i!=null ? list[i] : {name:'',email:'',role:'Customer',joined:new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}),status:'active'};
+    openModal(i!=null?'Edit Pengguna':'Tambah Pengguna', `
+      <div class="field"><label>Nama</label><input id="f-name" value="${u.name}"></div>
+      <div class="field"><label>Email</label><input id="f-email" type="email" value="${u.email}"></div>
+      <div class="field"><label>Role</label><select id="f-role">
+        ${['Customer','Admin'].map(r=>`<option ${r===u.role?'selected':''}>${r}</option>`).join('')}</select></div>`,
+      ()=>{
+        const data={
+          id:u.id||('U-'+String(Date.now()).slice(-4)),
+          name:document.getElementById('f-name').value||'Tanpa nama',
+          email:document.getElementById('f-email').value,
+          role:document.getElementById('f-role').value,
+          joined:u.joined, status:u.status
+        };
+        if(i!=null) list[i]=data; else list.unshift(data);
+        save(); draw(); closeModal();
+      });
+  }
+  function toggleBan(i){ list[i].status = list[i].status==='active'?'banned':'active'; save(); draw(); }
+  function delUser(i){ if(confirm('Hapus pengguna "'+list[i].name+'"?')){ list.splice(i,1); save(); draw(); } }
+  draw();
+</script>
+</body>
+</html>

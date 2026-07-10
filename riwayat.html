@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>History Transaksi — 9club</title>
+<link rel="icon" href="assets/img/logo-9club-white.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=1">
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-head">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="index.html">Home</a> / History Transaksi</div>
+    <h1>History Transaksi</h1>
+    <p>Semua pesananmu tersimpan di sini. Lacak status dan detail order.</p>
+  </div>
+</div>
+
+<div class="wrap section">
+  <div id="ok-banner"></div>
+  <div id="orders-root"></div>
+</div>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/auth.js?v=1"></script>
+<script src="assets/js/products.js?v=1"></script>
+<script src="assets/js/main.js?v=1"></script>
+<script>
+  mountHeader(); mountFooter();
+  const ok = new URLSearchParams(location.search).get('ok');
+  if(ok){
+    document.getElementById('ok-banner').innerHTML =
+      `<div style="background:var(--lime);border-radius:12px;padding:18px 22px;margin-bottom:24px;font-weight:600">
+        ✓ Pesanan <b>${ok}</b> berhasil dibuat! Terima kasih sudah belanja di 9club.</div>`;
+  }
+  const orders = getOrders();
+  const root = document.getElementById('orders-root');
+  if(!orders.length){
+    root.innerHTML = `<div class="empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 5h16v14H4z"/><path d="M4 9h16"/></svg>
+      <h3>Belum ada transaksi</h3>
+      <p style="margin-bottom:20px">Riwayat pesananmu akan muncul di sini.</p>
+      <a href="katalog.html" class="btn btn-dark">Mulai belanja</a></div>`;
+  } else {
+    root.innerHTML = orders.map(o=>`
+      <div class="order-card">
+        <div class="order-top">
+          <div><span class="id">${o.id}</span> <span class="date">· ${o.date} · ${o.pay}</span></div>
+          <span class="status ${o.status}">${o.status==='paid'?'Dibayar':o.status==='pending'?'Menunggu':'Dikirim'}</span>
+        </div>
+        <div class="order-items">
+          ${o.items.map(it=>`<div class="order-thumb" title="${it.name} (${it.size}×${it.qty})"><img src="${it.img}"></div>`).join('')}
+        </div>
+        <div class="order-foot">
+          <span style="color:var(--olive);font-size:14px">${o.items.reduce((n,i)=>n+i.qty,0)} item</span>
+          <span style="font-weight:700;font-size:17px">${rupiah(o.total)}</span>
+        </div>
+      </div>`).join('');
+  }
+</script>
+</body>
+</html>

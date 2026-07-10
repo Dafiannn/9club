@@ -1,0 +1,165 @@
+/* ==========================================================================
+   Ayudya — Landing Page (Beranda)
+   Base tokens diambil dari desain Figma (frame "Section → Region" / hero)
+   ========================================================================== */
+
+:root {
+  --color-black: #040404;
+  --color-white: #ffffff;
+  --gradient-top: rgba(54, 54, 54, 0.2);
+  --gradient-bottom: rgba(4, 4, 4, 0.65);
+  --header-height: 66.9px;
+  --container-max: 1351px;
+  --side-padding: 48px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  background: var(--color-black);
+  color: var(--color-white);
+}
+
+img, video { display: block; max-width: 100%; }
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* ===== HEADER ===== */
+.site-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  height: var(--header-height);
+}
+
+.header-inner {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--side-padding);
+}
+
+.nav-primary,
+.nav-secondary {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.nav-link {
+  color: var(--color-white);
+  text-decoration: none;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+}
+
+.logo img {
+  height: 28px;
+  width: auto;
+}
+
+.icon-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.icon-btn--light {
+  color: var(--color-white);
+}
+
+/* ===== HERO ===== */
+.hero {
+  position: relative;
+  width: 100%;
+  height: 761.13px;
+  max-height: 90vh;
+  overflow: hidden;
+  background: var(--color-black);
+}
+
+.hero__stage {
+  position: absolute;
+  inset: 0;
+}
+
+.hero__media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero__gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, var(--gradient-top), var(--gradient-bottom));
+  pointer-events: none;
+}
+
+.hero__back {
+  position: absolute;
+  left: var(--side-padding);
+  bottom: 48px;
+  z-index: 2;
+}
+
+.hero__nav {
+  position: absolute;
+  right: var(--side-padding);
+  bottom: 48px;
+  z-index: 2;
+  display: flex;
+  gap: 16px;
+}
+
+.hero__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.4);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.hero__dot--active {
+  background: var(--color-white);
+  transform: scale(1.6);
+}
+
+/* ===== Responsive (mobile) ===== */
+@media (max-width: 768px) {
+  :root {
+    --side-padding: 20px;
+  }
+
+  .nav-primary {
+    display: none; /* diganti hamburger menu di iterasi berikutnya */
+  }
+
+  .hero {
+    height: 100vh;
+    max-height: none;
+  }
+}

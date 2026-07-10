@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kelola Produk — 9club Admin</title>
+<link rel="icon" href="../assets/img/logo-9club-white.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css?v=1">
+<link rel="stylesheet" href="../assets/css/admin.css?v=1">
+</head>
+<body class="admin-body">
+<div class="admin">
+  <aside class="side" id="side"></aside>
+  <div class="admin-main">
+    <div class="topbar" id="topbar"></div>
+    <div class="admin-content">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Daftar Produk</h2>
+          <button class="btn btn-dark btn-sm" onclick="editProduct()">+ Tambah Produk</button>
+        </div>
+        <div class="table-wrap"><table class="tbl">
+          <thead><tr><th>Produk</th><th>Kategori</th><th>Harga</th><th>Stok</th><th>Status</th><th style="text-align:right">Aksi</th></tr></thead>
+          <tbody id="rows"></tbody></table></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/products.js?v=1"></script>
+<script src="../assets/js/auth.js?v=1"></script>
+<script src="../assets/js/admin.js?v=1"></script>
+<script>
+  mountAdmin('produk','Kelola Produk','Tambah, ubah, dan hapus produk toko');
+  let list = adminProducts();
+  function save(){ Store.set('9club_admin_products', list); }
+
+  function draw(){
+    document.getElementById('rows').innerHTML = list.map((p,i)=>`
+      <tr>
+        <td><div class="cell-prod"><img src="${p.img}"><div><b>${p.name}</b><small>${p.id}</small></div></div></td>
+        <td>${p.category}</td>
+        <td><b>${rupiah(p.price)}</b></td>
+        <td>${p.stock} pcs</td>
+        <td><span class="pill ${p.stock<=0?'red':'green'}">${p.stock<=0?'Sold Out':'Tersedia'}</span></td>
+        <td><div class="act-btns" style="justify-content:flex-end">
+          <button class="icon-act" onclick="editProduct(${i})" aria-label="Edit">${AICON.edit}</button>
+          <button class="icon-act del" onclick="delProduct(${i})" aria-label="Hapus">${AICON.trash}</button>
+        </div></td>
+      </tr>`).join('');
+  }
+  function editProduct(i){
+    const p = i!=null ? list[i] : {name:'',category:'T-Shirt',price:0,stock:10,sold:false,images:['../assets/img/products/tee-og-3.jpg']};
+    let imgs = [...((p.images&&p.images.length)?p.images:[p.img].filter(Boolean))];
+    if(!imgs.length) imgs=['../assets/img/products/tee-og-3.jpg'];
+
+    openModal(i!=null?'Edit Produk':'Tambah Produk', `
+      <div class="field"><label>Gambar Produk</label>
+        <div class="img-mgr" id="img-list"></div>
+        <input type="file" id="img-file" accept="image/*" multiple hidden>
+        <small style="color:var(--olive);font-size:12px;display:block;margin-top:8px">Klik gambar untuk jadikan cover · tombol × untuk hapus · + untuk tambah foto.</small>
+      </div>
+      <div class="field"><label>Nama Produk</label><input id="f-name" value="${p.name}"></div>
+      <div class="field"><label>Kategori</label><select id="f-cat">
+        ${['T-Shirt','Headwear','Bottoms'].map(c=>`<option ${c===p.category?'selected':''}>${c}</option>`).join('')}</select></div>
+      <div class="field-row">
+        <div class="field"><label>Harga (Rp)</label><input id="f-price" type="number" value="${p.price}"></div>
+        <div class="field"><label>Stok</label><input id="f-stock" type="number" min="0" value="${p.stock}"></div>
+      </div>
+      <div class="field"><label>Deskripsi</label><textarea id="f-desc" rows="3" placeholder="Deskripsi produk...">${p.desc||''}</textarea></div>
+      <div class="field-row">
+        <div class="field"><label>Warna</label><input id="f-color" value="${p.color||''}" placeholder="mis. Black"></div>
+        <div class="field"><label>Koleksi</label><input id="f-drop" value="${p.drop||''}" placeholder="mis. Drop 1 Collection"></div>
+      </div>
+      <div class="field"><label>Bahan</label><input id="f-material" value="${p.material||''}" placeholder="mis. Cotton Australian Coolbreeze 235 gsm"></div>
+      <div class="field"><label>Status (otomatis)</label>
+        <div id="status-preview"></div>
+        <small style="color:var(--olive);font-size:12px;display:block;margin-top:6px">Status mengikuti stok: <b>Tersedia</b> jika stok &gt; 0, <b>Sold Out</b> jika stok 0.</small>
+      </div>`,
+      ()=>{
+        const stock=Math.max(0,+document.getElementById('f-stock').value||0);
+        const data={
+          id:p.id||('prod-'+Date.now()),
+          name:document.getElementById('f-name').value||'Tanpa nama',
+          category:document.getElementById('f-cat').value,
+          price:+document.getElementById('f-price').value||0,
+          stock,
+          sold: stock<=0,               // otomatis: 0 = sold out
+          desc:document.getElementById('f-desc').value.trim(),
+          color:document.getElementById('f-color').value.trim(),
+          drop:document.getElementById('f-drop').value.trim(),
+          material:document.getElementById('f-material').value.trim(),
+          images:imgs, img:imgs[0]
+        };
+        if(i!=null) list[i]=data; else list.unshift(data);
+        try{ save(); }
+        catch(err){ alert('Penyimpanan penuh — kurangi jumlah/ukuran foto.'); return; }
+        draw(); closeModal();
+      });
+
+    /* ---- image manager (CRUD gambar) ---- */
+    const listEl=document.getElementById('img-list');
+    function renderThumbs(){
+      listEl.innerHTML = imgs.map((src,idx)=>`
+        <div class="img-thumb ${idx===0?'cover':''}" data-idx="${idx}" title="${idx===0?'Cover':'Klik untuk jadikan cover'}">
+          <img src="${src}" alt="">
+          ${idx===0?'<span class="cover-tag">COVER</span>':''}
+          <button type="button" class="del" data-del="${idx}" aria-label="Hapus">×</button>
+        </div>`).join('') + `<div class="img-add" id="img-add" title="Tambah foto">+</div>`;
+      listEl.querySelector('#img-add').onclick=()=>document.getElementById('img-file').click();
+      listEl.querySelectorAll('.del').forEach(b=>b.onclick=e=>{
+        e.stopPropagation(); imgs.splice(+b.dataset.del,1);
+        if(!imgs.length) imgs=['../assets/img/products/tee-og-3.jpg']; renderThumbs();
+      });
+      listEl.querySelectorAll('.img-thumb').forEach(t=>t.onclick=()=>{
+        const idx=+t.dataset.idx; if(idx>0){ const [m]=imgs.splice(idx,1); imgs.unshift(m); renderThumbs(); }
+      });
+    }
+    renderThumbs();
+    document.getElementById('img-file').onchange=e=>{
+      filesToDataURLs(e.target.files, urls=>{ imgs.push(...urls); renderThumbs(); }, 900, 0.82);
+      e.target.value='';
+    };
+
+    /* ---- status otomatis dari stok (preview live) ---- */
+    const stockInput=document.getElementById('f-stock');
+    const statusPrev=document.getElementById('status-preview');
+    function updateStatus(){
+      const s=Math.max(0,+stockInput.value||0);
+      statusPrev.innerHTML=`<span class="pill ${s<=0?'red':'green'}">${s<=0?'Sold Out':'Tersedia'}</span>`;
+    }
+    stockInput.addEventListener('input',updateStatus); updateStatus();
+  }
+  function delProduct(i){ if(confirm('Hapus produk "'+list[i].name+'"?')){ list.splice(i,1); save(); draw(); } }
+  draw();
+</script>
+</body>
+</html>

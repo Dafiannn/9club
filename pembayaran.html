@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pembayaran — 9club</title>
+<link rel="icon" href="assets/img/logo-9club-white.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=1">
+</head>
+<body>
+<div id="site-header"></div>
+
+<div class="page-head">
+  <div class="wrap">
+    <div class="breadcrumb"><a href="keranjang.html">Keranjang</a> / Pembayaran</div>
+    <h1>Checkout</h1>
+  </div>
+</div>
+
+<div class="wrap">
+  <div id="checkout-root"></div>
+</div>
+
+<div id="site-footer"></div>
+
+<script src="assets/js/auth.js?v=1"></script>
+<script src="assets/js/products.js?v=1"></script>
+<script src="assets/js/main.js?v=1"></script>
+<script>
+  mountHeader(); mountFooter();
+  const SHIP = 20000;
+  const items = Cart.get();
+
+  if(!items.length){
+    document.getElementById('checkout-root').innerHTML =
+      `<div class="empty"><h3>Belum ada yang di-checkout</h3><p style="margin-bottom:18px">Keranjangmu kosong.</p><a href="katalog.html" class="btn btn-dark">Belanja dulu</a></div>`;
+  } else {
+    const sub = Cart.total();
+    document.getElementById('checkout-root').innerHTML = `
+    <form class="checkout" id="coForm">
+      <div>
+        <div class="form-card">
+          <h3><span class="n">1</span> Info Pengiriman</h3>
+          <div class="field"><label>Nama Lengkap</label><input required placeholder="Nama penerima"></div>
+          <div class="field-row">
+            <div class="field"><label>No. HP</label><input required placeholder="08xxxxxxxxxx"></div>
+            <div class="field"><label>Email</label><input type="email" required placeholder="kamu@email.com"></div>
+          </div>
+          <div class="field"><label>Alamat</label><textarea required rows="3" placeholder="Jalan, no. rumah, RT/RW"></textarea></div>
+          <div class="field-row">
+            <div class="field"><label>Kota</label><input required placeholder="Surabaya"></div>
+            <div class="field"><label>Kode Pos</label><input required placeholder="60111"></div>
+          </div>
+        </div>
+        <div class="form-card">
+          <h3><span class="n">2</span> Metode Pembayaran</h3>
+          <label class="pay-opt active"><input type="radio" name="pay" value="Transfer Bank" checked> Transfer Bank (BCA / Mandiri)</label>
+          <label class="pay-opt"><input type="radio" name="pay" value="E-Wallet"> E-Wallet (GoPay / OVO / Dana)</label>
+          <label class="pay-opt"><input type="radio" name="pay" value="COD"> COD (Bayar di Tempat)</label>
+          <p style="font-size:12px;color:var(--olive);margin-top:10px">Ini prototipe UI — tidak ada transaksi uang sungguhan.</p>
+        </div>
+      </div>
+      <div class="summary">
+        <h3>Pesananmu</h3>
+        ${items.map(it=>`<div class="mini-item"><div class="thumb"><img src="${it.img}"></div>
+          <div style="flex:1"><div style="font-weight:600">${it.name}</div>
+          <div style="color:var(--olive)">${it.size} × ${it.qty}</div></div>
+          <div style="font-weight:600">${rupiah(it.price*it.qty)}</div></div>`).join('')}
+        <div class="summary-row" style="margin-top:16px"><span>Subtotal</span><span>${rupiah(sub)}</span></div>
+        <div class="summary-row"><span>Ongkir</span><span>${rupiah(SHIP)}</span></div>
+        <div class="summary-row total"><span>Total</span><span>${rupiah(sub+SHIP)}</span></div>
+        <button type="submit" class="btn btn-dark btn-block" style="margin-top:18px">Buat Pesanan</button>
+      </div>
+    </form>`;
+
+    document.querySelectorAll('.pay-opt input').forEach(r=>r.onchange=()=>{
+      document.querySelectorAll('.pay-opt').forEach(o=>o.classList.remove('active'));
+      r.closest('.pay-opt').classList.add('active');
+    });
+
+    document.getElementById('coForm').onsubmit = e => {
+      e.preventDefault();
+      const pay = document.querySelector('input[name=pay]:checked').value;
+      const orders = JSON.parse(localStorage.getItem('9club_orders')||'[]');
+      const order = {
+        id: '9C-' + Math.random().toString(36).slice(2,7).toUpperCase(),
+        date: new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}),
+        items, total: sub+SHIP, pay, status: pay==='COD'?'pending':'paid'
+      };
+      orders.unshift(order);
+      localStorage.setItem('9club_orders', JSON.stringify(orders));
+      Cart.clear();
+      location.href = 'riwayat.html?ok=' + order.id;
+    };
+  }
+</script>
+</body>
+</html>
